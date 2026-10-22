@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gráfico da Bondade</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #0f0f12;
+      color: #f1f2f6;
+      text-align: center;
+      padding: 20px 15px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .container-principal {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+    }
+
+    /* Título Principal */
+    .header-title {
+      font-size: 2.2rem;
+      font-weight: 900;
+      background: linear-gradient(45deg, #ff4757, #70a1ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 5px;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      color: #a4b0be;
+      margin-bottom: 30px;
+    }
+
+    /* Tela Inicial / Menu de Início */
+    .menu-inicio {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      width: 100%;
+      max-width: 350px;
+      animation: fadeIn 0.4s ease-in-out;
+    }
+
+    .card-opcao {
+      background: #1e1e24;
+      border: 2px solid #2f3542;
+      padding: 18px 20px;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .card-opcao:hover {
+      border-color: #ff4757;
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(255, 71, 87, 0.3);
+    }
+
+    .card-opcao .icone {
+      font-size: 1.8rem;
+    }
+
+    .card-opcao .texto {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    /* Botão Voltar */
+    .btn-voltar {
+      background: #2f3542;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 20px;
+      align-self: flex-start;
+      transition: background 0.2s ease;
+    }
+
+    .btn-voltar:hover {
+      background: #ff4757;
+    }
+
+    /* Seções */
+    .secao {
+      display: none;
+      animation: fadeIn 0.4s ease-in-out;
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .secao.ativa {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .secao-titulo {
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 20px;
+      color: #dfe4ea;
+      border-bottom: 2px solid #2f3542;
+      padding-bottom: 8px;
+      text-align: left;
+    }
+
+    /* Cards */
+    .card {
+      background: #1e1e24;
+      border: 1px solid #2f3542;
+      padding: 14px;
+      margin-bottom: 12px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      transition: transform 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+    }
+
+    .info-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #2f3542;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .nome {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #f1f2f6;
+      line-height: 1.2;
+    }
+
+    .detalhes {
+      font-size: 0.8rem;
+      color: #8395a7;
+    }
+
+    /* Efeito RGB Animado para o ADM */
+    .card-adm {
+      border: 2px solid transparent;
+      animation: rgbBorder 3s linear infinite;
+      background: linear-gradient(#1e1e24, #1e1e24) padding-box,
+                  linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000) border-box;
+      box-shadow: 0 0 15px rgba(255, 0, 200, 0.3);
+    }
+
+    .nome-adm {
+      font-weight: 800;
+      animation: rgbText 3s linear infinite;
+    }
+
+    .insta-link {
+      display: inline-block;
+      margin-top: 3px;
+      font-size: 0.78rem;
+      color: #e1306c;
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .insta-link:hover {
+      text-decoration: underline;
+    }
+
+    @keyframes rgbText {
+      0% { color: #ff4757; }
+      20% { color: #ffa502; }
+      40% { color: #2ed573; }
+      60% { color: #1e90ff; }
+      80% { color: #a55eea; }
+      100% { color: #ff4757; }
+    }
+
+    /* Tags Personalizadas */
+    .tag {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      white-space: nowrap;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .tag-boa { background: rgba(46, 213, 115, 0.2); color: #2ed573; border: 1px solid #2ed573; }
+    .tag-alerta { background: rgba(255, 165, 2, 0.2); color: #ffa502; border: 1px solid #ffa502; }
+    .tag-perigo { background: rgba(255, 71, 87, 0.2); color: #ff4757; border: 1px solid #ff4757; }
+    .tag-roxo { background: rgba(165, 94, 234, 0.2); color: #a55eea; border: 1px solid #a55eea; }
+    .tag-humor { background: rgba(220, 221, 225, 0.15); color: #dcdde1; border: 1px solid #dcdde1; }
+    .tag-craque { background: rgba(255, 215, 0, 0.2); color: #ffd700; border: 1px solid #ffd700; }
+    .tag-confeiteira { background: rgba(255, 159, 243, 0.2); color: #ff9ff3; border: 1px solid #ff9ff3; }
+    .tag-faltoso { background: rgba(87, 101, 116, 0.3); color: #8395a7; border: 1px solid #8395a7; text-decoration: line-through; }
+    .tag-adm { background: linear-gradient(45deg, #ff007f, #7f00ff); color: #fff; font-weight: 900; }
+
+    .btn-editar { background:#1e90ff; color:#fff; padding:5px 8px; border:0; border-radius:6px; cursor:pointer; font-size:.72rem; margin-left:5px; }
+    .btn-abrir-edicao { background:#1e90ff; color:#fff; }
+    .aviso-local { color:#a4b0be; font-size:.78rem; line-height:1.45; margin-top:10px; }
+    .acoes-card { display:flex; align-items:center; flex-wrap:wrap; justify-content:flex-end; gap:4px; }
+    .aviso-local { color:#a4b0be; font-size:.8rem; line-height:1.45; margin:12px 0; text-align:left; }
+
+    /* Painel ADM */
+    .form-adm {
+      background: #1e1e24;
+      padding: 20px;
+      border-radius: 14px;
+      border: 1px solid #ff4757;
+      text-align: left;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      margin-bottom: 5px;
+      color: #a4b0be;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #2f3542;
+      background: #0f0f12;
+      color: #fff;
+    }
+
+    .btn-acao {
+      width: 100%;
+      background: #2ed573;
+      color: #000;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .btn-remover {
+      background: #ff4757;
+      color: #fff;
+      padding: 4px 8px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.7rem;
+      margin-left: 5px;
+    }
+
+    .btn-editar { background:#3742fa; color:#fff; border:0; border-radius:6px; padding:7px 10px; cursor:pointer; margin-top:10px; width:100%; font-weight:700; }
+    .adm-acoes { display:flex; flex-direction:column; gap:8px; margin-top:12px; }
+    .aviso-local { color:#a4b0be; font-size:.82rem; margin-top:10px; line-height:1.4; }
+    .mural-upload { background:#1e1e24; border:1px solid #2f3542; padding:15px; border-radius:12px; margin-bottom:15px; text-align:left; }
+    .mural-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+    .mural-item { background:#1e1e24; border:1px solid #2f3542; border-radius:12px; overflow:hidden; text-align:left; }
+    .mural-item img { width:100%; aspect-ratio:1/1; object-fit:cover; display:block; }
+    .mural-legenda { padding:9px; font-size:.85rem; }
+    .mural-item button { margin:0 9px 9px; }
+    footer {
+      margin-top: 30px;
+      font-size: 0.8rem;
+      color: #57606f;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container-principal">
+    <h1 class="header-title">Gráfico da Bondade</h1>
+    <p class="subtitle">A verdade nua e crua sobre a turma</p>
+
+    <!-- TELA INICIAL COM AS OPÇÕES -->
+    <div id="inicio" class="menu-inicio">
+      <div class="card-opcao" onclick="abrirSecao('alunos')">
+        <span class="icone">🎓</span>
+        <span class="texto">Lista de Alunos</span>
+        <span>➔</span>
+      </div>
+      <div class="card-opcao" onclick="abrirSecao('professores')">
+        <span class="icone">👨‍🏫</span>
+        <span class="texto">Corpo Docente</span>
+        <span>➔</span>
+      </div>
+      <div class="card-opcao" onclick="abrirSecao('gestao')">
+        <span class="icone">🏫</span>
+        <span class="texto">Gestão</span>
+        <span>➔</span>
+      </div>
+      <div class="card-opcao" onclick="abrirSecao('mural')">
+        <span class="icone">📸</span>
+        <span class="texto">Mural</span>
+        <span>➔</span>
+      </div>
+      <div class="card-opcao" onclick="acessarPainelAdm()">
+        <span class="icone">⚙️</span>
+        <span class="texto">Área Restrita ADM</span>
+        <span>🔒</span>
+      </div>
+      
+      <!-- OPÇÃO DE CONTATO / WHATSAPP -->
+      <a href="https://wa.me/qr/CJQCHYUOBACVD1" target="_blank" class="card-opcao" style="border-color: #25d366;">
+        <span class="icone">💬</span>
+        <span class="texto">Falar no WhatsApp</span>
+        <span>🔗</span>
+      </a>
+    </div>
+
+    <!-- SEÇÃO ALUNOS -->
+    <div id="alunos" class="secao">
+      <button class="btn-voltar" onclick="voltarInicio()">⬅ Voltar ao Início</button>
+      <div class="secao-titulo">Alunos da Turma (19)</div>
+      <div id="lista-alunos">
+        <div class="card"><div class="info-box"><div class="avatar">A</div><span class="nome">Arthur Lima dos Santos Goes</span></div><span class="tag tag-boa">boa pessoa</span></div>
+        <div class="card"><div class="info-box"><div class="avatar">B</div><span class="nome">Bianka dos Santos Silva Pinto</span></div><span class="tag tag-alerta">Rapaz...</span></div>
+        <div class="card"><div class="info-box"><div class="avatar">D</div><span class="nome">Deyvson Damasio Martins Silva</span></div><span class="tag tag-roxo">"é a vida"</span></div>
+        <div class="card"><div class="info-box"><div class="avatar">D</div><span class="nome">Diagne Gloria Medrado Rocha</span></div><span class="tag tag-boa">boa pessoa</span></div>
+        <div class="card"><div class="info-box"><div class="avatar">E</div><span class="nome">Erick Alves de Oliveira</span></div><span class="tag tag-boa">boa pessoa</span></div>
+        <div class="card"><div class="info-box"><div class="avatar">E</div><span class="nome">Ezequias dos Santos Almeida</span></div><span class="tag tag-boa">boa pessoa</span></div>
+        <div class="card"><div class="info-box"><div class="avatar">I</div><span class="nome">Isaque Trindade Lima</span></div><span class="tag tag-boa">boa pessoa</span></div>
+        <div class="card"><div class="info-box"><div class="avatar">I</div><span class="nome">Iza Lorrane Santos</span></div><span class="tag tag-humor">humor ultrapassado</span></div>
+        <div class="card"><div class="info-box"><div class="avatar">J</div><span class="nome">Jenifer Kelly Souza Reis</span></div><span class="tag tag-perigo">nojenta em escola</span></div>
+        <div class="card"><div class="info-box"><div class="avatar">J</div><span class="nome">Jose Igo de Jesus de Lima</span></div><span class="tag tag-craque">craque da sala</span></div>
+        <div class="card"><div class="info-box"><div class="avatar">K</div><span class="nome">Karoline Machado dos Santos</span></div><span class="tag tag-confeiteira">confeiteira "disciplinada"</span></div>
+        <div class="card"><div class="info-box"><div class="avatar">L</div><span class="nome">Lais Jesus dos Santos</span></div><span class="tag tag-boa">boa pessoa</span></div>
+        
+        <!-- CARD DO ADM COM RGB E INSTAGRAM DIRETO -->
+        <div class="card card-adm">
+          <div class="info-box">
+            <div class="avatar" style="background: linear-gradient(45deg, #ff007f, #7f00ff);">L</div>
+            <div>
+              <span class="nome nome-adm">Leandro de Matos Neves</span><br>
+              <a href="https://instagram.com/leandroz_neves" target="_blank" class="insta-link">📷 @leandroz_neves</a>
+            </div>
+          </div>
+          <span class="tag tag-adm">👑 ADM DO SITE</span>
+        </div>
+
+        <div class="card"><div class="info-box"><div class="avatar">L</div><span class="nome">Lorrane Gomes Alves</span></div><span class="tag tag-roxo">???</span></div>
+        <div class="card"><div class="info-box"><div class="avatar">M</div><span class="nome">Maria Eliza de Matos Almeida</span></div><span class="tag tag-faltoso">não vai mais kkkk</span></div>
+        <div class="card"><div class="info-box"><div class="avatar">O</div><span class="nome">Otavio de Oliveira Carneiro</span></div><span class="tag tag-boa">boa pessoa</span></div>
+        <div class="card"><div class="info-box"><div class="avatar">T</div><span class="nome">Thiago Victor Silva Castro</span></div><span class="tag tag-boa">boa pessoa</span></div>
+        <div class="card"><div class="info-box"><div class="avatar">V</div><span class="nome">Vitor Medrado da Silva</span></div><span class="tag tag-alerta">✈️ turista</span></div>
+        <div class="card"><div class="info-box"><div class="avatar">Y</div><span class="nome">Yasmin Vitoria Mascarenhas</span></div><span class="tag tag-boa">boa pessoa</span></div>
+      </div>
+    </div>
+
+    <!-- SEÇÃO PROFESSORES -->
+    <div id="professores" class="secao">
+      <button class="btn-voltar" onclick="voltarInicio()">⬅ Voltar ao Início</button>
+      <div class="secao-titulo">Corpo Docente</div>
+      <div id="lista-professores">
+        <div class="card">
+          <div class="info-box"><div class="avatar">📐</div><div><span class="nome">Breno</span><br><span class="detalhes">Matemática</span></div></div>
+          <span class="tag tag-boa">Muito Bom</span>
+        </div>
+        <div class="card">
+          <div class="info-box"><div class="avatar">📚</div><div><span class="nome">Taciene</span><br><span class="detalhes">Português</span></div></div>
+          <span class="tag tag-boa">Muito Boa</span>
+        </div>
+        <div class="card">
+          <div class="info-box"><div class="avatar">📜</div><div><span class="nome">João Emílio</span><br><span class="detalhes">História</span></div></div>
+          <span class="tag tag-roxo">"meu filho da Bolívia"</span>
+        </div>
+        <div class="card">
+          <div class="info-box"><div class="avatar">🌍</div><div><span class="nome">Conceição</span><br><span class="detalhes">Geografia</span></div></div>
+          <span class="tag tag-perigo">Medo do Fim do Mundo</span>
+        </div>
+        <div class="card">
+          <div class="info-box"><div class="avatar">🧬</div><div><span class="nome">Malu</span><br><span class="detalhes">Biologia & Física</span></div></div>
+          <span class="tag tag-boa">Profissional</span>
+        </div>
+        <div class="card">
+          <div class="info-box"><div class="avatar">🧪</div><div><span class="nome">Professor(a)</span><br><span class="detalhes">Química & Agroecologia</span></div></div>
+          <span class="tag tag-perigo">"esse sistema é uma desgraça"</span>
+        </div>
+        <div class="card">
+          <div class="info-box"><div class="avatar">⚽</div><div><span class="nome">Professor(a)</span><br><span class="detalhes">Ed. Física & Inglês</span></div></div>
+          <span class="tag tag-boa">Melhor do Mundo</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEÇÃO GESTÃO -->
+    <div id="gestao" class="secao">
+      <button class="btn-voltar" onclick="voltarInicio()">⬅ Voltar ao Início</button>
+      <div class="secao-titulo">Direção e Funcionários</div>
+      <div id="lista-gestao">
+        <p class="aviso-local">Os nomes e cargos da equipe de gestão aparecerão aqui.</p>
+      </div>
+    </div>
+
+    <!-- SEÇÃO MURAL -->
+    <div id="mural" class="secao">
+      <button class="btn-voltar" onclick="voltarInicio()">⬅ Voltar ao Início</button>
+      <div class="secao-titulo">📸 Mural da Turma</div>
+      <p class="aviso-local" style="margin-bottom:15px">Momentos da turma, compartilhados online.</p>
+      <div id="mural-grid" class="mural-grid"></div>
+      <p id="mural-vazio" class="aviso-local">Ainda não há fotos no mural.</p>
+    </div>
+
+    <!-- SEÇÃO PAINEL ADM -->
+    <div id="adm" class="secao">
+      <button class="btn-voltar" onclick="voltarInicio()">⬅ Voltar ao Início</button>
+      <div class="secao-titulo">Painel do Administrador</div>
+      <div class="form-adm">
+        <div class="form-group">
+          <label>Tipo de Registro:</label>
+          <select id="adm-tipo" class="form-control">
+            <option value="alunos">Aluno</option>
+            <option value="professores">Professor</option>
+            <option value="gestao">Diretor / Funcionário</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Nome:</label>
+          <input type="text" id="adm-nome" class="form-control" placeholder="Ex: Fulano da Silva">
+        </div>
+        <div class="form-group">
+          <label>Matéria ou cargo (professores e gestão):</label>
+          <input type="text" id="adm-materia" class="form-control" placeholder="Ex: Filosofia / Diretor(a)">
+        </div>
+        <div class="form-group">
+          <label>Status / Frase / Nível:</label>
+          <input type="text" id="adm-status" class="form-control" placeholder="Ex: Gente Fina / Demônio">
+        </div>
+        <div class="form-group">
+          <label>Cor do texto da frase:</label>
+          <select id="adm-cor" class="form-control">
+            <option value="verde">Verde</option><option value="vermelho">Vermelho</option>
+            <option value="amarelo">Amarelo</option><option value="azul">Azul</option>
+            <option value="roxo">Roxo</option><option value="branco">Branco</option>
+            <option value="laranja">Laranja</option><option value="rosa">Rosa</option>
+          </select>
+        </div>
+        <button class="btn-acao" onclick="adicionarRegistro()">➕ Adicionar ao Gráfico</button>
+        <button class="btn-editar" type="button" onclick="garantirDadosIniciais()">☁️ Publicar lista inicial no banco (primeira vez)</button>
+        <button class="btn-remover" type="button" onclick="sairAdm()">🔒 Sair da conta ADM</button>
+
+        <div class="form-group" style="margin-top:24px; padding-top:18px; border-top:1px solid #2f3542;">
+          <label for="adm-editar-alvo">✏️ Editar ou excluir alguém da lista:</label>
+          <select id="adm-editar-alvo" class="form-control">
+            <option value="">Selecione um aluno, professor ou funcionário...</option>
+          </select>
+          <div class="adm-acoes">
+            <button class="btn-editar" type="button" onclick="editarSelecionado()">✏️ Editar informações selecionadas</button>
+            <button class="btn-acao" type="button" onclick="alterarCorSelecionado()">🎨 Aplicar cor selecionada à frase</button>
+            <button class="btn-remover" style="padding:10px;width:100%;margin:0;font-size:.9rem" type="button" onclick="excluirSelecionado()">🗑️ Excluir da lista</button>
+          </div>
+          <p class="aviso-local">A edição e a exclusão ficam somente nesta área ADM. Na tela Alunos, Professores e Gestão, os visitantes veem apenas as listas.</p>
+        </div>
+        <div class="form-group" style="margin-top:24px; padding-top:18px; border-top:1px solid #2f3542;">
+          <label for="mural-fotos">📸 Adicionar fotos ao Mural:</label>
+          <input id="mural-fotos" type="file" class="form-control" accept="image/*" multiple>
+          <input id="mural-legenda" type="text" class="form-control" style="margin-top:8px" placeholder="Legenda opcional para as fotos">
+          <button class="btn-acao" type="button" onclick="adicionarFotosMural()">➕ Adicionar ao Mural</button>
+          <p class="aviso-local">Use fotos da turma com autorização das pessoas que aparecem nelas.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Gráfico da Bondade © 2026 - Painel do ADM (Leandro)</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://rwpqhgzfbepqjcbtehpv.supabase.co";
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_PQJYc3yVBMq6t8kc2q0nAQ_suaw7GKP";
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+    let admAutenticado = false;
+    let registrosCloud = [];
+    let muralFotos = [];
+    let sincronizando = false;
+    const listas = ['alunos', 'professores', 'gestao'];
+    const cores = { verde:'#2ed573', vermelho:'#ff4757', amarelo:'#ffd32a', azul:'#70a1ff', roxo:'#a55eea', branco:'#f1f2f6', laranja:'#ffa502', rosa:'#ff9ff3' };
+    let dadosIniciais = [];
+
+    function mostrarStatus(texto, erro=false) {
+      let el = document.getElementById('supabase-status');
+      if (!el) {
+        el = document.createElement('p'); el.id='supabase-status'; el.className='aviso-local';
+        const footer=document.querySelector('footer'); footer?.prepend(el);
+      }
+      el.textContent=texto; el.style.color=erro?'#ff6b81':'#70a1ff';
+    }
+    function abrirSecao(id) {
+      document.getElementById('inicio').style.display = 'none';
+      document.querySelectorAll('.secao').forEach(el => el.classList.remove('ativa'));
+      document.getElementById(id).classList.add('ativa');
+    }
+    function voltarInicio() {
+      document.querySelectorAll('.secao').forEach(el => el.classList.remove('ativa'));
+      document.getElementById('inicio').style.display = 'flex';
+    }
+    async function acessarPainelAdm() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (session) {
+        admAutenticado=true; abrirSecao('adm'); return;
+      }
+      const email=prompt('ADM do Gráfico da Bondade\nDigite o e-mail da conta administradora criada no Supabase:');
+      if (!email) return;
+      const password=prompt('Digite a senha dessa conta do Supabase:');
+      if (!password) return;
+      const { error } = await supabaseClient.auth.signInWithPassword({email:email.trim(), password});
+      if (error) { alert('Não foi possível entrar: '+error.message); return; }
+      admAutenticado=true;
+      alert('Login administrativo realizado!');
+      await garantirDadosIniciais();
+      abrirSecao('adm');
+    }
+    async function sairAdm() {
+      await supabaseClient.auth.signOut(); admAutenticado=false; voltarInicio(); alert('Sessão administrativa encerrada.');
+    }
+    function extrairRegistrosDaTela() {
+      const out=[];
+      listas.forEach(tipo=>{
+        document.querySelectorAll('#lista-'+tipo+' .card').forEach(card=>{
+          const nome=card.querySelector('.nome')?.textContent.trim();
+          if(!nome) return;
+          const tag=card.querySelector('.tag');
+          out.push({tipo,nome,detalhe:card.querySelector('.detalhes')?.textContent.trim()||'',status:tag?.textContent.trim()||'',cor:tag?.dataset.cor||corDaClasse(tag),avatar:card.querySelector('.avatar')?.textContent.trim()||nome.charAt(0)});
+        });
+      });
+      return out;
+    }
+    function corDaClasse(tag) {
+      if(!tag) return 'verde';
+      const c=getComputedStyle(tag).color;
+      const map={'rgb(46, 213, 115)':'verde','rgb(255, 71, 87)':'vermelho','rgb(255, 211, 42)':'amarelo','rgb(112, 161, 255)':'azul','rgb(165, 94, 234)':'roxo','rgb(241, 242, 246)':'branco','rgb(255, 165, 2)':'laranja','rgb(255, 159, 243)':'rosa'};
+      return map[c]||'verde';
+    }
+    async function carregarListas() {
+      dadosIniciais=extrairRegistrosDaTela();
+      mostrarStatus('Conectando ao banco de dados...');
+      await carregarRegistrosCloud();
+      await carregarMuralCloud();
+      supabaseClient.channel('grafico-bondade-live')
+        .on('postgres_changes',{event:'*',schema:'public',table:'grafico_bondade_registros'},()=>carregarRegistrosCloud())
+        .on('postgres_changes',{event:'*',schema:'public',table:'grafico_bondade_mural'},()=>carregarMuralCloud())
+        .subscribe(status=>{ if(status==='SUBSCRIBED') mostrarStatus('🟢 Conectado: atualizações ao vivo ativadas.'); });
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      admAutenticado=!!session;
+      supabaseClient.auth.onAuthStateChange((_event,session)=>{admAutenticado=!!session;});
+    }
+    async function carregarRegistrosCloud() {
+      const {data,error}=await supabaseClient.from('grafico_bondade_registros').select('*').order('criado_em',{ascending:true});
+      if(error){mostrarStatus('Configuração do Supabase pendente. Execute o arquivo SQL de configuração.',true);console.error(error);return;}
+      registrosCloud=data||[];
+      if(registrosCloud.length) renderizarRegistros(registrosCloud);
+      else if (!sincronizando) { atualizarOpcoesEdicao(); }
+      mostrarStatus('🟢 Conectado ao Supabase. Lista sincronizada em tempo real.');
+    }
+    async function garantirDadosIniciais() {
+      const {data,error}=await supabaseClient.from('grafico_bondade_registros').select('id').limit(1);
+      if(error){alert('O banco ainda não está configurado. Execute o SQL de configuração fornecido junto com o site.');return;}
+      if(data.length) { await carregarRegistrosCloud(); return; }
+      const registros=dadosIniciais.length?dadosIniciais:extrairRegistrosDaTela();
+      if(!registros.length) return;
+      const {error:insertError}=await supabaseClient.from('grafico_bondade_registros').insert(registros.map(r=>({tipo:r.tipo,nome:r.nome,detalhe:r.detalhe,status:r.status,cor:cores[r.cor]?r.cor:'verde',avatar:r.avatar})));
+      if(insertError){alert('Não foi possível publicar a lista inicial: '+insertError.message);return;}
+      await carregarRegistrosCloud();
+      alert('Lista inicial publicada no banco! Agora todos verão os mesmos dados.');
+    }
+    function renderizarRegistros(rows) {
+      listas.forEach(tipo=>{const el=document.getElementById('lista-'+tipo);if(el)el.innerHTML='';});
+      rows.forEach(r=>{
+        const cont=document.getElementById('lista-'+r.tipo); if(!cont)return;
+        const card=document.createElement('div');card.className='card';
+        const info=document.createElement('div');info.className='info-box';
+        const avatar=document.createElement('div');avatar.className='avatar';avatar.textContent=r.avatar||r.nome?.charAt(0)||'?';
+        const bloco=document.createElement('div');const nome=document.createElement('span');nome.className='nome';nome.textContent=r.nome||'';bloco.appendChild(nome);
+        if(r.tipo!=='alunos'&&r.detalhe){bloco.appendChild(document.createElement('br'));const d=document.createElement('span');d.className='detalhes';d.textContent=r.detalhe;bloco.appendChild(d);}
+        info.append(avatar,bloco);const tag=document.createElement('span');tag.className='tag tag-alerta';tag.textContent=r.status||'';aplicarCor(tag,cores[r.cor]?r.cor:'verde');card.append(info,tag);cont.appendChild(card);
+      });
+      atualizarOpcoesEdicao();
+    }
+    function aplicarCor(tag, cor) { tag.dataset.cor=cor;tag.style.color=cores[cor];tag.style.borderColor=cores[cor];tag.style.backgroundColor=cores[cor]+'22'; }
+    function atualizarOpcoesEdicao() {
+      const select=document.getElementById('adm-editar-alvo');if(!select)return;const antigo=select.value;
+      select.innerHTML='<option value="">Selecione um aluno, professor ou funcionário...</option>';
+      const rotulos={alunos:'Aluno',professores:'Professor',gestao:'Gestão'};
+      listas.forEach(tipo=>{const grupo=document.createElement('optgroup');grupo.label=rotulos[tipo];
+        registrosCloud.filter(r=>r.tipo===tipo).forEach(r=>{const opt=document.createElement('option');opt.value=r.id;opt.textContent=r.nome;grupo.appendChild(opt);});
+        if(grupo.children.length)select.appendChild(grupo);
+      });
+      if([...select.options].some(o=>o.value===antigo))select.value=antigo;
+    }
+    function registroSelecionado(){return registrosCloud.find(r=>String(r.id)===document.getElementById('adm-editar-alvo').value);}
+    async function editarSelecionado() {
+      if(!admAutenticado){alert('Entre como ADM primeiro.');return;}const r=registroSelecionado();if(!r){alert('Selecione alguém na lista.');return;}
+      const nome=prompt('Editar nome:',r.nome);if(nome===null)return;if(!nome.trim()){alert('O nome não pode ficar vazio.');return;}
+      const status=prompt('Editar frase / comportamento:',r.status||'');if(status===null)return;
+      let detalhe=r.detalhe||'';if(r.tipo!=='alunos'){detalhe=prompt('Editar matéria ou cargo:',detalhe);if(detalhe===null)return;}
+      const cor=prompt('Cor: verde, vermelho, amarelo, azul, roxo, branco, laranja ou rosa',r.cor||'verde');if(cor===null)return;const corKey=cor.trim().toLowerCase();if(!cores[corKey]){alert('Cor inválida.');return;}
+      const {error}=await supabaseClient.from('grafico_bondade_registros').update({nome:nome.trim(),status:status.trim(),detalhe:detalhe.trim(),cor:corKey,avatar:nome.trim().charAt(0).toUpperCase()}).eq('id',r.id);
+      if(error){alert('Erro ao salvar: '+error.message);return;}await carregarRegistrosCloud();
+    }
+    async function alterarCorSelecionado() {
+      if(!admAutenticado){alert('Entre como ADM primeiro.');return;}const r=registroSelecionado();if(!r){alert('Selecione alguém na lista primeiro.');return;}
+      const cor=document.getElementById('adm-cor').value;const {error}=await supabaseClient.from('grafico_bondade_registros').update({cor}).eq('id',r.id);
+      if(error){alert('Erro ao salvar cor: '+error.message);return;}await carregarRegistrosCloud();alert('Cor atualizada para todos os visitantes!');
+    }
+    async function excluirSelecionado() {
+      if(!admAutenticado){alert('Entre como ADM primeiro.');return;}const r=registroSelecionado();if(!r){alert('Selecione alguém para excluir.');return;}
+      if(!confirm('Tem certeza que deseja excluir '+r.nome+'?'))return;
+      const {error}=await supabaseClient.from('grafico_bondade_registros').delete().eq('id',r.id);
+      if(error){alert('Erro ao excluir: '+error.message);return;}await carregarRegistrosCloud();alert('Registro excluído para todos.');
+    }
+    async function adicionarRegistro() {
+      if(!admAutenticado){alert('Entre como ADM primeiro.');return;}
+      const tipo=document.getElementById('adm-tipo').value,nome=document.getElementById('adm-nome').value.trim(),detalhe=document.getElementById('adm-materia').value.trim(),status=document.getElementById('adm-status').value.trim(),cor=document.getElementById('adm-cor').value;
+      if(!nome||!status){alert('Preencha o nome e a frase / comportamento!');return;}
+      const {error}=await supabaseClient.from('grafico_bondade_registros').insert({tipo,nome,detalhe,status,cor,avatar:nome.charAt(0).toUpperCase()});
+      if(error){alert('Erro ao adicionar: '+error.message);return;}
+      document.getElementById('adm-nome').value='';document.getElementById('adm-materia').value='';document.getElementById('adm-status').value='';await carregarRegistrosCloud();alert('Registro publicado para todos!');
+    }
+    async function carregarMuralCloud() {
+      const {data,error}=await supabaseClient.from('grafico_bondade_mural').select('*').order('criado_em',{ascending:false});
+      if(error){console.warn('Mural ainda não configurado:',error);return;}
+      muralFotos=data||[];renderizarMural();
+    }
+    function renderizarMural() {
+      const grid=document.getElementById('mural-grid');if(!grid)return;grid.innerHTML='';document.getElementById('mural-vazio').style.display=muralFotos.length?'none':'block';
+      muralFotos.forEach(foto=>{const item=document.createElement('div');item.className='mural-item';const img=document.createElement('img');img.src=foto.url;img.alt=foto.legenda||'Foto da turma';const leg=document.createElement('div');leg.className='mural-legenda';leg.textContent=foto.legenda||'Momento da turma';item.append(img,leg);if(admAutenticado){const btn=document.createElement('button');btn.className='btn-remover';btn.textContent='Excluir foto';btn.onclick=()=>excluirFotoMural(foto);item.appendChild(btn);}grid.appendChild(item);});
+    }
+    async function adicionarFotosMural() {
+      if(!admAutenticado){alert('Entre como ADM primeiro.');return;}
+      const input=document.getElementById('mural-fotos'),legenda=document.getElementById('mural-legenda').value.trim();if(!input.files.length){alert('Escolha pelo menos uma foto.');return;}
+      for(const file of input.files){if(!file.type.startsWith('image/'))continue;const caminho=crypto.randomUUID()+'-'+file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+        const {error:upErr}=await supabaseClient.storage.from('mural').upload(caminho,file,{upsert:false,contentType:file.type});if(upErr){alert('Erro ao enviar foto: '+upErr.message);return;}
+        const {data:{publicUrl}}=supabaseClient.storage.from('mural').getPublicUrl(caminho);
+        const {error:dbErr}=await supabaseClient.from('grafico_bondade_mural').insert({url:publicUrl,caminho,legenda});if(dbErr){alert('Foto enviada, mas não foi possível salvar a legenda: '+dbErr.message);return;}
+      }
+      input.value='';document.getElementById('mural-legenda').value='';await carregarMuralCloud();alert('Fotos publicadas no mural para todos!');
+    }
+    async function excluirFotoMural(foto) {
+      if(!admAutenticado||!confirm('Excluir esta foto do mural para todos?'))return;
+      const {error}=await supabaseClient.from('grafico_bondade_mural').delete().eq('id',foto.id);if(error){alert('Erro ao excluir foto: '+error.message);return;}
+      await supabaseClient.storage.from('mural').remove([foto.caminho]);await carregarMuralCloud();
+    }
+    document.addEventListener('DOMContentLoaded',carregarListas);
+  </script>
+
+</body>
+</html>
